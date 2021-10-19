@@ -8,6 +8,7 @@
 *.xml
 *.json
 *.txt
+*.log
 *.sh
 *main*
 *test*
