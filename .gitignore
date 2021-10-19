@@ -1,0 +1,14 @@
+
+# dir
+/__pycache__/
+/.vscode/
+
+
+# file
+*.xml
+*.json
+*.txt
+*.sh
+*main*
+*test*
+
