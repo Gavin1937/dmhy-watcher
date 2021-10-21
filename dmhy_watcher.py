@@ -11,7 +11,7 @@ from discord_msg_util import send_message
 # global variables
 CONFIG:dict
 WATCHLIST:list
-NEW_BUNGUMIS:list = []
+NEW_BANGUMIS:list = []
 
 CONFIG_TEMPLATE:dict = {
     "post_fetch_cmd": {
@@ -78,7 +78,7 @@ def update_watchlist():
     broadcastInfoMsg("Updating watchlist.json...")
     
     global WATCHLIST
-    for bangumi in NEW_BUNGUMIS:
+    for bangumi in NEW_BANGUMIS:
         update_item:dict = WATCHLIST[bangumi['watchlist_idx']]
         new_episode = max(update_item["latest_episode"], bangumi['episode'])
         update_item.update({"latest_episode":new_episode})
@@ -145,7 +145,7 @@ def fetch_bangumi() -> int:
         broadcastErrorMsg("Empty Watchlist")
         raise ValueError("Empty Watchlist")
     
-    global NEW_BUNGUMIS
+    global NEW_BANGUMIS
     for idx, bangumi in enumerate(WATCHLIST):
         latest_bangumi = fetch_rss(bangumi["rss_url"], bangumi["regex_pattern"], bangumi["latest_episode"])
         # cannot find bangumi from rss_url
@@ -153,7 +153,7 @@ def fetch_bangumi() -> int:
             continue
         else:
             for bang in latest_bangumi:
-                NEW_BUNGUMIS.append(
+                NEW_BANGUMIS.append(
                     {
                         "watchlist_idx": idx,
                         "title": bang[1].title,
@@ -164,7 +164,8 @@ def fetch_bangumi() -> int:
                     }
                 )
     
-    return len(NEW_BUNGUMIS)
+    broadcastInfoMsg(f"Found {len(NEW_BANGUMIS)} new Bangumis.")
+    return len(NEW_BANGUMIS)
 
 def post_fetch():
     "post fetch actions if exists: write to fifo, run cmd"
@@ -174,7 +175,7 @@ def post_fetch():
     # send notification to discord if has fifo_filepath
     if CONFIG["fifo_filepath"] is not None:
         msg = f"@ New Bangumi update in share.dmhy.org:\n"
-        for bangumi in NEW_BUNGUMIS:
+        for bangumi in NEW_BANGUMIS:
             msg += bangumi["title"] + '\n'
         send_message(
             CONFIG["fifo_filepath"],
@@ -199,7 +200,7 @@ def post_fetch():
                 non_exec_once_cmds.append(cmd)
             sleep(cmd["sleep_time"])
         # execute other cmds
-        for bangumi in NEW_BUNGUMIS:
+        for bangumi in NEW_BANGUMIS:
             for cmd in non_exec_once_cmds:
                 loc_cmd = cmd["cmd"]
                 if loc_cmd.find('?') > 0:
