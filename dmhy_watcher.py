@@ -1,10 +1,9 @@
 
 import os, sys
 import json
-from time import mktime
+from time import mktime, sleep
 import re
 import feedparser
-from bs4 import BeautifulSoup
 from My_Logger import *
 from discord_msg_util import send_message
 
@@ -15,7 +14,16 @@ WATCHLIST:list
 NEW_BUNGUMIS:list = []
 
 CONFIG_TEMPLATE:dict = {
-    "post_fetch_cmd": None,
+    "post_fetch_cmd": {
+        "working_dir": "",
+        "cmds": [
+            {
+                "cmd": "",
+                "sleep_time": 0,
+                "exec_once": True
+            }
+        ]
+    },
     "fifo_filepath": None
 }
 
@@ -67,10 +75,13 @@ def init_watchlist():
         json.dump([], watchlistfile, ensure_ascii=False)
 
 def update_watchlist():
+    broadcastInfoMsg("Updating watchlist.json...")
+    
     global WATCHLIST
     for bangumi in NEW_BUNGUMIS:
         update_item:dict = WATCHLIST[bangumi['watchlist_idx']]
-        update_item.update({"latest_episode":bangumi['episode']})
+        new_episode = max(update_item["latest_episode"], bangumi['episode'])
+        update_item.update({"latest_episode":new_episode})
         WATCHLIST[bangumi['watchlist_idx']] = update_item
     
     with open("watchlist.json", 'w', encoding="utf-8") as watchlistfile:
@@ -119,8 +130,13 @@ def fetch_rss(rss_url:str, regex_pattern:str, latest_episode:int) -> list:
     
     return new_items
 
-def fetch_bangumi():
-    "fetch bangumi via rss from share.dmhy.org"
+def fetch_bangumi() -> int:
+    """
+        fetch bangumi via rss from share.dmhy.org
+        return number of new bangumis fetched
+    """
+    
+    broadcastInfoMsg("Fetching new bangumis...")
     
     if len(CONFIG) == 0:
         broadcastErrorMsg("Empty Config")
@@ -147,10 +163,15 @@ def fetch_bangumi():
                         "magnet": bang[1].enclosures[0].href
                     }
                 )
+    
+    return len(NEW_BUNGUMIS)
 
 def post_fetch():
     "post fetch actions if exists: write to fifo, run cmd"
     
+    broadcastInfoMsg("In post fetch process...")
+    
+    # send notification to discord if has fifo_filepath
     if CONFIG["fifo_filepath"] is not None:
         msg = f"@ New Bangumi update in share.dmhy.org:\n"
         for bangumi in NEW_BUNGUMIS:
@@ -160,8 +181,34 @@ def post_fetch():
             msg
         )
     
+    # do post_fetch_cmd if has one
     if CONFIG["post_fetch_cmd"] is not None:
-        os.system(CONFIG["post_fetch_cmd"])
+        # change working dir
+        target_dir = CONFIG["post_fetch_cmd"]["working_dir"]
+        cwd = os.getcwd()
+        if target_dir != None and len(target_dir) > 0:
+            os.chdir(target_dir)
+        
+        # execute cmds
+        non_exec_once_cmds = []
+        # execute cmds w/ "exec_once" flag
+        for cmd in CONFIG["post_fetch_cmd"]["cmds"]:
+            if cmd["exec_once"]:
+                os.system(cmd["cmd"])
+            else:
+                non_exec_once_cmds.append(cmd)
+            sleep(cmd["sleep_time"])
+        # execute other cmds
+        for bangumi in NEW_BUNGUMIS:
+            for cmd in non_exec_once_cmds:
+                loc_cmd = cmd["cmd"]
+                if loc_cmd.find('?') > 0:
+                    loc_cmd = loc_cmd.replace('?', f"\'{bangumi['magnet']}\'")
+                os.system(loc_cmd)
+                sleep(cmd["sleep_time"])
+        
+        # go back to original dir
+        os.chdir(cwd)
 
 if __name__ == "__main__":
     try:
@@ -169,9 +216,9 @@ if __name__ == "__main__":
         load_config()
         load_watchlist()
         
-        # fetch bangumi & run post fetch cmds
-        fetch_bangumi()
-        post_fetch()
+        # fetch bangumi & run post fetch cmds if get anything new
+        if fetch_bangumi() > 0:
+            post_fetch()
         
         # post update
         update_watchlist()
