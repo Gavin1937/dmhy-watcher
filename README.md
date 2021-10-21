@@ -130,4 +130,6 @@ Fetching new bangumis...
 Updating watchlist.json...
 ```
 * 如果脚本找到了新的番剧更新，会在着两条中间运行你写的 post_fetch_cmd 
-
+* 你可以用系统自带的定时自动运行功能去跑这个脚本
+  * [Windows Task Schedular](https://www.jianshu.com/p/4e44d480fddd)
+  * [Linux/MacOS Crontab](https://www.runoob.com/w3cnote/linux-crontab-tasks.html)

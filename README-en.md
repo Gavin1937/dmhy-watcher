@@ -130,4 +130,7 @@ Fetching new bangumis...
 Updating watchlist.json...
 ```
 * If the script find new updates, it will run all commands in post_fetch_cmd between the two outputs above
+* You can use OS build-in auto task runner to execute this script
+  * [Windows Task Schedular](https://www.dummies.com/computers/pcs/how-to-open-windows-task-scheduler/)
+  * [Linux/MacOS Crontab](https://www.geeksforgeeks.org/crontab-in-linux-with-examples/)
 
