@@ -53,7 +53,8 @@ def load_config():
 
 def init_config():
     with open("config.json", 'w', encoding="utf-8") as configfile:
-        json.dump(CONFIG_TEMPLATE, configfile, ensure_ascii=False)
+        json.dump(CONFIG_TEMPLATE, configfile, ensure_ascii=False, indent=4)
+        configfile.write('\n')
 
 def load_watchlist():
     global WATCHLIST
@@ -72,7 +73,8 @@ def load_watchlist():
 
 def init_watchlist():
     with open("watchlist.json", 'w', encoding="utf-8") as watchlistfile:
-        json.dump([], watchlistfile, ensure_ascii=False)
+        json.dump([], watchlistfile, ensure_ascii=False, indent=4)
+        watchlistfile.write('\n')
 
 def update_watchlist():
     broadcastInfoMsg("Updating watchlist.json...")
@@ -105,7 +107,8 @@ def add_bangumi(rss_url:str = 0, regex_pattern:str = 0, latest_episode:str = 0):
     WATCHLIST.append(new_unit)
     try:
         with open("watchlist.json", 'w', encoding="utf-8") as watchlistfile:
-            json.dump(WATCHLIST, watchlistfile, ensure_ascii=False)
+            json.dump(WATCHLIST, watchlistfile, ensure_ascii=False, indent=4)
+            watchlistfile.write('\n')
     except Exception as err: # Unable to write to watchlist.json
         broadcastErrorMsg(f"Unable to write to watchlist.json because: {err}")
         raise err
