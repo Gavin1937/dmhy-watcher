@@ -85,7 +85,8 @@ def update_watchlist():
         WATCHLIST[bangumi['watchlist_idx']] = update_item
     
     with open("watchlist.json", 'w', encoding="utf-8") as watchlistfile:
-        json.dump(WATCHLIST, watchlistfile, ensure_ascii=False)
+        json.dump(WATCHLIST, watchlistfile, ensure_ascii=False, indent=4)
+        watchlistfile.write('\n')
 
 def add_bangumi(rss_url:str = 0, regex_pattern:str = 0, latest_episode:str = 0):
     "Add new Bangumi to watchlist.json"
