@@ -9,8 +9,9 @@ A [share.dmhy.org](http://share.dmhy.org/) Bangumi/Anime following script base o
 
 **This script is written for learning. I suggest you to use [弹弹play](http://www.dandanplay.com/) if you have similar demands of following Bangumis**
 
-## [Chinese Versoin](./README.md)
+## [Chinese Versoin README](./README.md)
 
+# Python Version: >= 3.8
 # Python Packages
 
 | Package    | Version |

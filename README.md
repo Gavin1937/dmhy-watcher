@@ -9,8 +9,9 @@
 
 **这个脚本是以学习为目的去写的。如果你有类似的追番需求建议使用[弹弹play](http://www.dandanplay.com/)**
 
-## [English Versoin](./README-en.md)
+## [English Versoin README](./README-en.md)
 
+# Python 版本: >= 3.8
 # Python 包
 
 | Package    | Version  |
