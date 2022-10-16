@@ -178,9 +178,9 @@ def post_fetch():
     
     # send notification to discord if has fifo_filepath
     if CONFIG["fifo_filepath"] is not None:
-        msg = f"@ New Bangumi update in share.dmhy.org:\n"
-        for bangumi in NEW_BANGUMIS:
-            msg += bangumi["title"] + '\n'
+        msg = f"@ New Bangumi update in share.dmhy.org:\n\n"
+        for idx,bangumi in enumerate(NEW_BANGUMIS, 1):
+            msg += f'[{str(idx).zfill(2)}]: ' + bangumi["title"] + '\n\n'
         send_message(
             CONFIG["fifo_filepath"],
             msg
