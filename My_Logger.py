@@ -10,7 +10,7 @@ my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024,
 my_handler.setFormatter(log_formatter)
 my_handler.setLevel(logging.DEBUG)
 
-logger = logging.getLogger('root')
+logger = logging.getLogger('dmhy-watcher')
 logger.setLevel(logging.DEBUG)
 
 logger.addHandler(my_handler)
