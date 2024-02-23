@@ -5,13 +5,14 @@ from time import mktime, sleep
 import re
 import feedparser
 from My_Logger import *
-from discord_msg_util import send_message
+from discord_msg_util import *
 
 
 # global variables
 CONFIG:dict
 WATCHLIST:list
 NEW_BANGUMIS:list = []
+msg_util = DiscordMsgUtil()
 
 CONFIG_TEMPLATE:dict = {
     "post_fetch_cmd": {
@@ -176,13 +177,16 @@ def post_fetch():
     
     broadcastInfoMsg("In post fetch process...")
     
+    global msg_util
+    if not msg_util.fifo_path:
+        msg_util.update_fifo_path(CONFIG['fifo_filepath'])
+    
     # send notification to discord if has fifo_filepath
     if CONFIG["fifo_filepath"] is not None:
         msg = f"@ New Bangumi update in share.dmhy.org:\n\n"
         for idx,bangumi in enumerate(NEW_BANGUMIS, 1):
             msg += f'[{str(idx).zfill(2)}]: ' + bangumi["title"] + '\n\n'
-        send_message(
-            CONFIG["fifo_filepath"],
+        msg_util.send_message(
             msg
         )
     
