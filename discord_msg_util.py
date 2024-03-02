@@ -74,7 +74,7 @@ class DiscordMsgUtil(Singleton):
         if fifo_file is not None:
             try:
                 for _ in range(self.__buffer.qsize()):
-                    os.write(fifo_file, self.__buffer.get())
+                    os.write(fifo_file, self.__buffer.get().encode('utf-8'))
             except OSError as exc:
                 if exc.errno == errno.EPIPE:
                     return DiscordMsgStatus.FIFO_BROKEN_EPIPE
