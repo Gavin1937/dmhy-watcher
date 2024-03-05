@@ -2,6 +2,7 @@
 import os, sys
 import json
 from time import mktime, sleep
+from datetime import datetime
 import re
 import feedparser
 from My_Logger import *
@@ -36,6 +37,9 @@ WATCHLIST_UNIT:dict = {
 
 
 # functions
+
+def create_discord_str(message:str) -> str:
+    return f'@ [{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}][dmhy-watcher]\n{message}'
 
 def load_config():
     global CONFIG
@@ -183,12 +187,10 @@ def post_fetch():
     
     # send notification to discord if has fifo_filepath
     if CONFIG["fifo_filepath"] is not None:
-        msg = f"@ New Bangumi update in share.dmhy.org:\n\n"
+        msg = f"New Bangumi update in share.dmhy.org:\n\n"
         for idx,bangumi in enumerate(NEW_BANGUMIS, 1):
             msg += f'[{str(idx).zfill(2)}]: ' + bangumi["title"] + '\n\n'
-        msg_util.send_message(
-            msg
-        )
+        msg_util.send_message(create_discord_str(msg))
     
     # do post_fetch_cmd if has one
     if CONFIG["post_fetch_cmd"] is not None:
